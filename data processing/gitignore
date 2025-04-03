@@ -1,0 +1,6 @@
+genome/hg38.genome.fa
+genome/hg19.genome.fa
+genome/mm9.genome.fa
+genome/mm10.genome.fa
+hg38.blacklist.bed.gz
+hg19.blacklist.bed.gz
