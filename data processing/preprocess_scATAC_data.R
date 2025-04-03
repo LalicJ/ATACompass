@@ -96,16 +96,18 @@ row_ranges <- StringToGRanges(rownames(merged), sep = c(":", "-"))
 non_blacklisted <- setdiff(seq_along(row_ranges), queryHits(findOverlaps(row_ranges, blacklist_ranges)))
 merged <- subset(merged, features = rownames(merged)[non_blacklisted])
 
-# ------------ Call peaks using MACS2 ------------ #
-merged <- CallPeaks(merged, group.by = "Celltype", macs2.path = macs2_path)
-peaks_df <- as.data.frame(merged@assays$peaks@ranges)
-write.csv(peaks_df, file.path(output_dir, "merged_called_peaks.csv"), row.names = FALSE)
-
 # ------------ Preprocessing and clustering ------------ #
 merged <- RunTFIDF(merged)
 merged <- FindTopFeatures(merged, min.cutoff = "q5")
 merged <- RunSVD(merged)
-merged <- RunUMAP(merged, dims = 2:30, reduction = "lsi")
+merged <- RunUMAP(merged, dims = 2:50, reduction = "lsi")
+merged <- FindNeighbors(merged, reduction = "lsi", dims = 2:50)
+merged <- FindClusters(merged, resolution = 0.5)
+
+merged <- RunTFIDF(merged)
+merged <- FindTopFeatures(merged, min.cutoff = "q5")
+merged <- RunSVD(merged)
+merged <- RunUMAP(merged, dims = 2:50, reduction = "lsi")
 
 # ------------ Celltype inference ------------ #
 if ("cell_type" %in% colnames(merged@meta.data)) {
@@ -113,6 +115,10 @@ if ("cell_type" %in% colnames(merged@meta.data)) {
   merged$Celltype[is.na(merged$Celltype)] <- "Unknown"
 }
 
+# ------------ Call peaks using MACS2 ------------ #
+merged <- CallPeaks(merged, group.by = "Celltype", macs2.path = macs2_path)
+peaks_df <- as.data.frame(merged@assays$peaks@ranges)
+write.csv(peaks_df, file.path(output_dir, "merged_called_peaks.csv"), row.names = FALSE)
 
 # ------------ Save output ------------ #
 save(merged, file = file.path(output_dir, "merged_seurat.RData"))
