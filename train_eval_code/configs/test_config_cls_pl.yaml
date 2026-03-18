@@ -1,0 +1,53 @@
+defaults:
+  - hyena_model: tiny-1k
+  - training_args: training_args
+  - head: transformer
+  - trainer: test_cls_pl
+
+model:
+  _target_: models.cls_model_pl.ClsModelWithHyena
+  hyena_model: ${hyena_model}
+  head: ${head}
+  num_seqs: ${testset.num_sequences}
+  num_classes: 21
+  optimizer_config:
+    class_path: torch.optim.AdamW
+    init_args:
+      lr: 5e-5
+  scheduler_config:
+    class_path: torch.optim.lr_scheduler.LinearLR
+    init_args:
+      start_factor: 1.0
+      end_factor: 1.0
+
+testset:
+  _target_: base_seqs_datasets.cls_dataset.ClsTestSet
+  csv_files:
+    - "/home/ia00/zgq/cell2sentence/data/20231109_scATAC/orders/split/adrenal_test.csv"
+    - "/home/ia00/zgq/cell2sentence/data/20231109_scATAC/orders/split/cerebellum_test.csv"
+    - "/home/ia00/zgq/cell2sentence/data/20231109_scATAC/orders/split/stomach_test.csv"
+    - "/home/ia00/zgq/cell2sentence/data/20231109_scATAC/orders/split/thymus_test.csv"
+  fasta_file: /home/ia00/zgq/cell2sentence/data/20231109_scATAC/hg19/hg19.fa
+  num_sequences: 100
+  max_jianji_per_sequence: 1024 
+  class_id_dict: /home/ia00/zgq/cell2sentence/data/20231109_scATAC/class_ids.json
+  rc_aug: False
+  add_eos: False
+
+batch_size: 24
+
+test:
+  ckpt: /home/ia00/zgq/cell2sentence/outputs/2024-03-27/14-45-25-857500/saved/2024-03-27_14-45-58/base_seqs_cls/iuym5n25/checkpoints/epoch=0-step=1544.ckpt
+
+tolerance: # fault tolerance for training on preemptible machines
+  logdir: ./resume
+  id: null # must be set to resume training on preemption
+
+# We primarily use wandb so this is moved to top level in the config for convenience
+# Set `~wandb` or `wandb=null` or `wandb.mode=disabled` to disable logging
+# If other loggers are added, it would make sense to put this one level lower under train/ or logger/
+output: ${now:%Y-%m-%d}/${now:%H-%M-%S-%f}
+
+hydra:
+  run:
+    dir: ./outputs/${output}

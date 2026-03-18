@@ -1,0 +1,14 @@
+model_name: /disk5/c2s_data/cell2sentence-ft-main/pretrained/gpt2
+num_train_epochs: 2
+gradient_accumulation_steps: 1
+per_device_train_batch_size: 16
+per_device_eval_batch_size: 16
+evaluation_strategy: steps
+fp16: True
+logging_steps: 1
+save_steps: 1
+learning_rate: 5e-05
+eval_dataset_size: 16
+eval_steps: 1
+overwrite_output_dir: False
+save_strategy: steps

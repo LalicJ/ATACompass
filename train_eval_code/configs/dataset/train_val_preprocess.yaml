@@ -1,0 +1,11 @@
+# preprocesss_function:
+_target_: base_seqs_datasets.preprocess_wrapper.train_val_preprocess_function_wrapper
+fasta_files: 
+# - /data/zyp/jb_workspace/cell2sentence-master/data/mm9/mm9.fa
+# - /data/zyp/jb_workspace/cell2sentence-master/data/hg38/hg38.fa
+- /data/zyp/jb_workspace/cell2sentence-master/data/hg19/hg19.fa
+num_sequences: 100 
+max_jianji_per_sequence: 1024
+rc_aug: False
+add_eos: False
+model_name: /data/zyp/jb_workspace/cell2sentence-master/pretrained_gpt2

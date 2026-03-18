@@ -1,0 +1,5 @@
+defaults:
+  - dataset: train_val_preprocess_cls
+  - hyena_model: tiny-1k
+  - training_args: training_args
+  - head: lstm

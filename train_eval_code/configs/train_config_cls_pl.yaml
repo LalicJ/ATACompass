@@ -1,0 +1,110 @@
+defaults:
+  - hyena_model: tiny-1k
+  - training_args: training_args
+  # - head: lstm
+  - head: transformer
+  - trainer: default
+  - callbacks: [base, checkpoint]
+
+model:
+  _target_: models.cls_model_pl.ClsModelWithHyena
+  hyena_model: ${hyena_model}
+  head: ${head}
+  num_seqs: ${trainset.num_sequences}
+  num_classes: 21
+  optimizer_config:
+    class_path: torch.optim.AdamW
+    init_args:
+      lr: 5e-5
+  scheduler_config:
+    class_path: torch.optim.lr_scheduler.LinearLR
+    init_args:
+      start_factor: 1.0
+      end_factor: 1.0
+
+trainset:
+  _target_: base_seqs_datasets.cls_dataset.ClsTrainSet
+  csv_files:
+    - "/home/ia00/zgq/cell2sentence/data/20231109_scATAC/orders/split_new/adrenal_train.csv"
+    - "/home/ia00/zgq/cell2sentence/data/20231109_scATAC/orders/split_new/cerebellum_train.csv"
+    - "/home/ia00/zgq/cell2sentence/data/20231109_scATAC/orders/split_new/stomach_train.csv"
+    - "/home/ia00/zgq/cell2sentence/data/20231109_scATAC/orders/split_new/thymus_train.csv"
+  # csv_files:
+  #   - "/home/ia00/zgq/cell2sentence/data/20231109_scATAC/orders/split/adrenal_train.csv"
+  #   - "/home/ia00/zgq/cell2sentence/data/20231109_scATAC/orders/split/cerebellum_train.csv"
+  #   - "/home/ia00/zgq/cell2sentence/data/20231109_scATAC/orders/split/stomach_train.csv"
+  #   - "/home/ia00/zgq/cell2sentence/data/20231109_scATAC/orders/split/thymus_train.csv"
+  # csv_files:
+  #   - "/home/ia00/zgq/cell2sentence/data/20231109_scATAC/orders/samples/adrenal_train.csv"
+  #   - "/home/ia00/zgq/cell2sentence/data/20231109_scATAC/orders/samples/cerebellum_train.csv"
+  #   - "/home/ia00/zgq/cell2sentence/data/20231109_scATAC/orders/samples/stomach_train.csv"
+  #   - "/home/ia00/zgq/cell2sentence/data/20231109_scATAC/orders/samples/thymus_train.csv"
+  fasta_file: /home/ia00/zgq/cell2sentence/data/hg19/hg19.fa
+  num_sequences: 100
+  max_jianji_per_sequence: 1024 
+  class_id_dict: /home/ia00/zgq/cell2sentence/data/20231109_scATAC/class_ids.json
+  rc_aug: False
+  add_eos: False
+
+testset:
+  _target_: base_seqs_datasets.cls_dataset.ClsTestSet
+  csv_files:
+    - "/home/ia00/zgq/cell2sentence/data/20231109_scATAC/orders/split_new/adrenal_test.csv"
+    - "/home/ia00/zgq/cell2sentence/data/20231109_scATAC/orders/split_new/cerebellum_test.csv"
+    - "/home/ia00/zgq/cell2sentence/data/20231109_scATAC/orders/split_new/stomach_test.csv"
+    - "/home/ia00/zgq/cell2sentence/data/20231109_scATAC/orders/split_new/thymus_test.csv"
+  # csv_files:
+  #   - "/home/ia00/zgq/cell2sentence/data/20231109_scATAC/orders/split/adrenal_test.csv"
+  #   - "/home/ia00/zgq/cell2sentence/data/20231109_scATAC/orders/split/cerebellum_test.csv"
+  #   - "/home/ia00/zgq/cell2sentence/data/20231109_scATAC/orders/split/stomach_test.csv"
+  #   - "/home/ia00/zgq/cell2sentence/data/20231109_scATAC/orders/split/thymus_test.csv"
+  
+  # csv_files:
+  #   - "/home/ia00/zgq/cell2sentence/data/20231109_scATAC/orders/samples/stomach_test.csv"
+  fasta_file: /home/ia00/zgq/cell2sentence/data/20231109_scATAC/hg19/hg19.fa
+  num_sequences: 100
+  max_jianji_per_sequence: 1024 
+  class_id_dict: /home/ia00/zgq/cell2sentence/data/20231109_scATAC/class_ids.json
+  rc_aug: False
+  add_eos: False
+
+batch_size: 24
+
+train:
+  seed: 0
+  interval: step    # Should be specified by scheduler. Also used by LR monitor
+  monitor: test/loss
+  mode: min
+  ema: 0.0 # Moving average model for validation # TODO move into callback
+  test: True # Test after training
+
+  ckpt: null # Resume training
+  disable_dataset: False # Disable dataset loading
+  validate_at_start: False
+
+  pretrained_model_path: null # Path to pretrained model
+  pretrained_model_strict_load: true # Whether to load the pretrained model even if the model is not compatible
+  pretrained_model_state_hook: # Hook called on the loaded model's state_dict
+    _name_: null
+  post_init_hook: # After initializing model, call method on model
+    _name_: null
+
+  layer_decay: # Used for ImageNet finetuning
+    _name_: null
+    decay: 0.7
+
+test:
+  ckpt: null
+
+tolerance: # fault tolerance for training on preemptible machines
+  logdir: ./resume
+  id: null # must be set to resume training on preemption
+
+# We primarily use wandb so this is moved to top level in the config for convenience
+# Set `~wandb` or `wandb=null` or `wandb.mode=disabled` to disable logging
+# If other loggers are added, it would make sense to put this one level lower under train/ or logger/
+output: ${now:%Y-%m-%d}/${now:%H-%M-%S-%f}
+
+hydra:
+  run:
+    dir: ./outputs/${output}

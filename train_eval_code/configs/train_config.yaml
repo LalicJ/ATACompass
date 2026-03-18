@@ -1,0 +1,6 @@
+defaults:
+  - dataset: train_val_preprocess
+  - hyena_model: tiny-1k
+  - training_args: training_args
+
+train_stage: 1

@@ -71,8 +71,14 @@ tmp*.py
 ehthumbs.db
 Thumbs.db
 
-/data/
-/pretrained/
+train_eval_code/data/
+train_eval_code/pretrained/
 
-20241111
-20241111_processed
+train_eval_code/20241111
+train_eval_code/20241111_processed
+*.csv
+train_eval_code/clearned_csv
+.history
+train_eval_code/20250212_cross_batch_data
+pretrained_gpt2
+wandb

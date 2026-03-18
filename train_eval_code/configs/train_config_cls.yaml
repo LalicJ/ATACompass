@@ -1,0 +1,10 @@
+defaults:
+  - dataset: train_val_preprocess_cls
+  - hyena_model: tiny-1k
+  - training_args: training_args
+  - head: lstm
+
+model:
+  hyena_model: ${hyena_model}
+  head: ${head}
+  num_seqs: ${dataset.num_sequences}

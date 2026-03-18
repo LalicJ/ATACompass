@@ -1,0 +1,9 @@
+defaults:
+  - dataset: test_preprocess
+  - hyena_model: tiny-1k
+  # - training_args: training_args
+
+model_name: ~
+# per_device_eval_batch_size: 16
+ 
+ 

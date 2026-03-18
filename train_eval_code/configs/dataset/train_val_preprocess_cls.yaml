@@ -1,0 +1,8 @@
+# preprocesss_function:
+_target_: base_seqs_datasets.preprocess_wrapper_cls.train_val_preprocess_function_wrapper
+fasta_file: /home/ia00/zgq/cell2sentence/data/hg19/hg19.fa
+class_id_dict: /home/ia00/zgq/cell2sentence/data/20231109_scATAC/class_ids.json
+num_sequences: 100 
+max_jianji_per_sequence: 1024
+rc_aug: False
+add_eos: False
