@@ -12,7 +12,8 @@ The framework integrates:
 
 to infer and compare cell identities across species.
 
-![image-20260318144445252](C:\Users\Dell\AppData\Roaming\Typora\typora-user-images\image-20260318144445252.png)
+<img width="1009" height="644" alt="5e6f545c-63ee-4b36-a260-f6cc79049f49" src="https://github.com/user-attachments/assets/8b236ba2-d8c1-4252-81a9-5adc49a898a0" />
+
 
 ------
 
